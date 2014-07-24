@@ -27,12 +27,8 @@ public class ActivityMap extends FragmentActivity implements GooglePlayServicesC
 		SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
 
 		if (savedInstanceState == null) {
-			// First incarnation of this activity.
 			mapFragment.setRetainInstance(true);
 		} else {
-			// Reincarnated activity. The obtained map is the same map instance
-			// in the previous
-			// activity life cycle. There is no need to reinitialize it.
 			mMap = mapFragment.getMap();
 		}
 		setUpMapIfNeeded();
@@ -49,13 +45,12 @@ public class ActivityMap extends FragmentActivity implements GooglePlayServicesC
 	@Override
 	protected void onStart() {
 		super.onStart();
-		// Connect the client.
+		
 		mLocationClient.connect();
 	}
 
 	@Override
 	protected void onStop() {
-		// Disconnecting the client invalidates it.
 		mLocationClient.disconnect();
 		super.onStop();
 	}
@@ -72,17 +67,9 @@ public class ActivityMap extends FragmentActivity implements GooglePlayServicesC
 	private void setUpMap() {
 		mMap.addMarker(new MarkerOptions().position(new LatLng(0, 0)).title("Marker"));
 	}
-
-	@Override
-	public void onConnectionFailed(ConnectionResult result) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void onConnected(Bundle connectionHint) {
-		Location mCurrentLocation;
-		mCurrentLocation = mLocationClient.getLastLocation();
+	
+	private void scrollMapToCurrentPostion() {
+		Location mCurrentLocation = mLocationClient.getLastLocation();
 
 		LatLng coordinate = new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
 		CameraUpdate yourLocation = CameraUpdateFactory.newLatLngZoom(coordinate, 11);
@@ -90,9 +77,15 @@ public class ActivityMap extends FragmentActivity implements GooglePlayServicesC
 	}
 
 	@Override
-	public void onDisconnected() {
-		// TODO Auto-generated method stub
-
+	public void onConnectionFailed(ConnectionResult result) {
 	}
 
+	@Override
+	public void onConnected(Bundle connectionHint) {
+		scrollMapToCurrentPostion();
+	}
+
+	@Override
+	public void onDisconnected() {
+	}
 }
