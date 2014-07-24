@@ -1,2 +1,4 @@
-dir_to_ignore/bin
-dir_to_ignore/gen
+dir_to_ignore/**/bin
+dir_to_ignore**/gen
+**/bin
+**/gen

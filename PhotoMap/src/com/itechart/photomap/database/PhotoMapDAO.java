@@ -1,18 +1,15 @@
 package com.itechart.photomap.database;
 
-import com.google.android.gms.internal.in;
+import java.sql.SQLException;
 
-public class PhotoMapDAO {
-	private static PhotoMapDAO instance;
-	
-	public synchronized static PhotoMapDAO getInstance() {
-		if (instance == null) {
-			instance = new PhotoMapDAO();
-		}
-		
-		return instance;
+import com.itechart.photomap.database.model.Photo;
+import com.j256.ormlite.dao.BaseDaoImpl;
+import com.j256.ormlite.support.ConnectionSource;
+
+public class PhotoMapDAO extends BaseDaoImpl<Photo, Integer>{
+	protected PhotoMapDAO(ConnectionSource connectionSource, Class<Photo> dataClass) throws SQLException {
+		super(connectionSource, dataClass);
 	}
 	
 	
-
 }
