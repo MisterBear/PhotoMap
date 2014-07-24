@@ -1,4 +1,4 @@
-package com.itechart.photomap.database.model;
+package com.itechart.database.model;
 
 import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;

@@ -1,11 +1,11 @@
-package com.itechart.photomap.database;
+package com.itechart.database;
 
 import java.sql.SQLException;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.itechart.photomap.database.model.Photo;
+import com.itechart.database.model.Photo;
 import com.itechart.utils.Utils;
 import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
 import com.j256.ormlite.support.ConnectionSource;

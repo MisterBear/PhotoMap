@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:phtapp="http://schemas.android.com/apk/res-auto" >
+
+    <group android:id="@+id/ma_map_group_gr" >
+        <item
+            android:id="@+id/ma_create_photo_it"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:title="@string/take_photo"
+            android:icon="@android:drawable/ic_menu_camera"
+            phtapp:showAsAction="always">
+        </item>
+    </group>
+
+</menu>
