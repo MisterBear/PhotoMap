@@ -71,15 +71,17 @@ public class MapFragment extends Fragment implements GooglePlayServicesClient.Co
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		setUpMapIfNeeded();
 	}
-
+	
 	@Override
-	public void onDestroyView() {
-		super.onDestroyView();
+	public void onPause() {
 		if (mMap != null) {
-			MainActivity.fragmentManager.beginTransaction().remove(MainActivity.fragmentManager.findFragmentById(R.id.map)).commit();
+			MainActivity.fragmentManager.beginTransaction().remove(MainActivity.fragmentManager.findFragmentById(R.id.map)).commitAllowingStateLoss();
 			mMap = null;
 		}
+		
+		super.onPause();
 	}
+
 
 	private void setUpMapIfNeeded() {
 		if (mMap == null) {

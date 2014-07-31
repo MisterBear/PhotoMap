@@ -38,6 +38,12 @@ public class MainActivity extends ActionBarActivity implements ActionBar.OnNavig
 		setUpActionBar();		
 	}
 	
+	@Override
+	protected void onResume() {
+	
+		super.onResume();
+	}
+	
 	private void setUpActionBar() {
 		actionBar = getSupportActionBar();
 		actionBar.setDisplayShowTitleEnabled(false);
