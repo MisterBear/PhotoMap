@@ -3,6 +3,7 @@
     <string name="app_name">PhotoMap</string>
     <string name="create_date">Create date:</string>
     <string name="take_photo">Take a photo</string>
+    <string name="enter_photo_name">Enter photo name</string>
 	<string-array name="navigation_menu">
 	    <item >Map</item>
 	    <item >List</item>
