@@ -1,6 +1,7 @@
 package com.itechart.activities;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.app.FragmentManager;
@@ -16,10 +17,10 @@ import com.itechart.fragments.PhotoListFragment;
 import com.itechart.photomap.R;
 
 public class MainActivity extends ActionBarActivity implements ActionBar.OnNavigationListener {
-	private static final int MAP_PAGE = 0;
-	private static final int LIST_PAGE = 1;
-	private static final int GRID_PAGE = 2;
-	private static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 100;
+	public static final int MAP_PAGE = 0;
+	public static final int LIST_PAGE = 1;
+	public static final int GRID_PAGE = 2;
+	public static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 100;
 	
 	public static FragmentManager fragmentManager;
 	private ActionBar actionBar;
@@ -60,15 +61,15 @@ public class MainActivity extends ActionBarActivity implements ActionBar.OnNavig
 	public boolean onNavigationItemSelected(int position, long id) {
 		switch (position) {
 		case MAP_PAGE:
-			fragmentManager.beginTransaction().replace(R.id.main_fragment_container, mapFragemnt).commit();			
+			fragmentManager.beginTransaction().replace(R.id.main_fragment_container, mapFragemnt).commitAllowingStateLoss();			
 			
 			break;
 		case LIST_PAGE:
-			fragmentManager.beginTransaction().replace(R.id.main_fragment_container, photoListFragemnt).commit();			
+			fragmentManager.beginTransaction().replace(R.id.main_fragment_container, photoListFragemnt).commitAllowingStateLoss();			
 			
 			break;
 		case GRID_PAGE:
-			fragmentManager.beginTransaction().replace(R.id.main_fragment_container, photoGridFragemnt).commit();			
+			fragmentManager.beginTransaction().replace(R.id.main_fragment_container, photoGridFragemnt).commitAllowingStateLoss();			
 			
 			break;
 		default:
@@ -78,6 +79,13 @@ public class MainActivity extends ActionBarActivity implements ActionBar.OnNavig
 		supportInvalidateOptionsMenu();
 
 		return false;
+	}
+	
+	@Override
+	protected void onDestroy() {
+		fragmentManager.beginTransaction().remove(MainActivity.fragmentManager.findFragmentById(R.id.map)).commitAllowingStateLoss();
+		
+		super.onDestroy();
 	}
 	
 	@Override
@@ -108,5 +116,26 @@ public class MainActivity extends ActionBarActivity implements ActionBar.OnNavig
 		}
 		
 		return super.onOptionsItemSelected(item);
+	}
+	
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+	    if (requestCode == CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE && resultCode == RESULT_OK) {
+	        Bundle extras = data.getExtras();
+	        mapFragemnt.setUpMapIfNeeded();
+	        Bitmap imageBitmap = (Bitmap) extras.get("data");
+	    }
+	}
+	
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		outState.putInt("1", actionBar.getSelectedNavigationIndex());
+		super.onSaveInstanceState(outState);
+	}
+	
+	@Override
+	protected void onRestoreInstanceState(Bundle savedInstanceState) {
+		actionBar.setSelectedNavigationItem(savedInstanceState.getInt("1"));
+		super.onRestoreInstanceState(savedInstanceState);
 	}
 }

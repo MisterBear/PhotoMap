@@ -2,3 +2,4 @@ dir_to_ignore/**/bin
 dir_to_ignore**/gen
 **/bin
 **/gen
+Libs/google_play_services/google-play-services_lib/bin/google-play-services_lib.jar
