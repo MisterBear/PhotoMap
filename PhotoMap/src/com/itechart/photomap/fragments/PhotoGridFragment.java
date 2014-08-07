@@ -1,4 +1,4 @@
-package com.itechart.fragments;
+package com.itechart.photomap.fragments;
 
 import android.support.v4.app.Fragment;
 

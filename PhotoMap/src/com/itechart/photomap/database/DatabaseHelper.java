@@ -1,12 +1,12 @@
-package com.itechart.database;
+package com.itechart.photomap.database;
 
 import java.sql.SQLException;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.itechart.database.model.Photo;
-import com.itechart.utils.Utils;
+import com.itechart.photomap.database.model.Photo;
+import com.itechart.photomap.utils.Utils;
 import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
@@ -40,9 +40,13 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		}
 	}
 	
-	public synchronized PhotoMapDAO getPhotoMapDAO() throws SQLException {
+	public synchronized PhotoMapDAO getPhotoMapDAO() {
 		if (photoMapDAO == null) {
-			photoMapDAO = new PhotoMapDAO(getConnectionSource(), Photo.class);
+			try {
+				photoMapDAO = new PhotoMapDAO(getConnectionSource(), Photo.class);
+			} catch (SQLException e) {
+				Utils.handleException(PhotoMapDAO.class.toString(), e);
+			}
 		}
 		
 		return photoMapDAO;

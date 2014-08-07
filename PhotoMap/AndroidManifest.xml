@@ -20,12 +20,13 @@
     <uses-permission android:name="android.permission.CAMERA" />
 
     <application
-        android:name="com.itechart.PhotoMap"
+        android:name="com.itechart.photomap.PhotoMap"
         android:allowBackup="true"
         android:icon="@drawable/app_icon"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
-        <activity android:name="com.itechart.activities.MainActivity" >
+        <activity android:name="com.itechart.photomap.activities.MainActivity"
+            android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -39,6 +40,30 @@
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
+
+        <activity android:name="com.dropbox.sync.android.DbxAuthActivity" />
+        <activity
+            android:name="com.dropbox.client2.android.AuthActivity"
+            android:launchMode="singleTask" >
+            <intent-filter>
+                <data android:scheme="db-lc0f6pvv7y8vwdl" />
+
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.BROWSABLE" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+                
+        <receiver
+            android:name="com.itechart.photomap.receivers.ConnectionChangeListener"
+            android:label="NetworkConnection" >
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+            </intent-filter>
+        </receiver>
+        
+        <service android:name="com.itechart.photomap.services.UploadService"/>
     </application>
 
 </manifest>

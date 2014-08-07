@@ -1,4 +1,4 @@
-package com.itechart.enumeration;
+package com.itechart.photomap.enumeration;
 
 public enum Tables {
 	PHOTO("PHOTO");

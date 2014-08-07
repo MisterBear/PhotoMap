@@ -12,5 +12,19 @@
             phtapp:showAsAction="always">
         </item>
     </group>
+    <item
+            android:id="@+id/ma_link_dropbox_account"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:title="@string/link_dropbox_account"
+            phtapp:showAsAction="never">
+        </item>
+         <item
+            android:id="@+id/ma_upload_dropbox_account"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:title="Upload"
+            phtapp:showAsAction="never">
+        </item>
 
 </menu>

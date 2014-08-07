@@ -1,13 +1,18 @@
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
     <string name="app_name">PhotoMap</string>
-    <string name="create_date">Create date:</string>
+    <string name="create_date">Create date:       %1$s</string>
     <string name="take_photo">Take a photo</string>
+    <string name="link_dropbox_account">Link to your dropbox account</string>
     <string name="enter_photo_name">Enter photo name</string>
-	<string-array name="navigation_menu">
-	    <item >Map</item>
-	    <item >List</item>
-	    <item >Gallery</item>
-	</string-array>
 
+    <string-array name="navigation_menu">
+        <item>Map</item>
+        <item>List</item>
+        <item>Gallery</item>
+    </string-array>
+
+    <string name="app_key_dropbox">lc0f6pvv7y8vwdl</string>
+    <string name="app_secret_dropbox">w2v1g5sijuewxxz</string>
+    <string name="upload_items_message">Upload photo, that stored locally? If canceled all photos ,that not yet been uploaded will be deleted.</string>
 </resources>
