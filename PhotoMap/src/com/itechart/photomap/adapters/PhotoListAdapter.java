@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import android.content.Context;
-import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -55,7 +54,7 @@ public class PhotoListAdapter extends BaseAdapter {
 		
 		PhotoPlaceholder placeholder = (PhotoPlaceholder) convertView.getTag();
 		
-		placeholder.ivPhoto.setImageBitmap(BitmapFactory.decodeFile(photo.getFilePath()));
+		PhotoMap.getInstance().getImageLoader().displayImage("file://"+photo.getFilePath(), placeholder.ivPhoto);
 		placeholder.tvName.setText(photo.getPhotoName());
 		
 		DateFormat dateFormat = android.text.format.DateFormat.getDateFormat(PhotoMap.getInstance().getApplicationContext());
