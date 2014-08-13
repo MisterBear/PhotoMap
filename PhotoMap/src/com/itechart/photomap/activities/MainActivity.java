@@ -68,20 +68,20 @@ public class MainActivity extends ActionBarActivity implements ActionBar.OnNavig
 		setContentView(R.layout.main_activity);
 
 		mLocationClient = new LocationClient(PhotoMap.getInstance(), MainActivity.this, MainActivity.this);
-		
+
 		connectionChangeReceiver = new BroadcastReceiver() {
 			public void onReceive(Context context, Intent intent) {
 				if (mapFragement != null) {
 					if (mapFragement.isVisible()) {
 						List<Photo> photos;
 						try {
-							photos = PhotoMap.getInstance().getPhotoMapDAO().queryAllUnploaded();
+							photos = PhotoMap.getInstance().getPhotoMapDAO().queryAllUnuploaded();
 							if (photos.size() > 0) {
-								Utils.showDilogApplyDialog(MainActivity.this, getString(R.string.upload_items_message),getString(android.R.string.yes), getString(android.R.string.no), MainActivity.this);
+								Utils.showDilogApplyDialog(MainActivity.this, getString(R.string.upload_items_message), getString(android.R.string.yes), getString(android.R.string.no), MainActivity.this);
 							}
 						} catch (SQLException e) {
 							e.printStackTrace();
-						}					
+						}
 					}
 				}
 			}
@@ -214,10 +214,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.OnNavig
 			mApi.getSession().startOAuth2Authentication(MainActivity.this);
 
 			break;
-		case R.id.ma_upload_dropbox_account:
-			startService(new Intent(MainActivity.this, UploadService.class));
 
-			break;
 		default:
 			break;
 		}
@@ -254,13 +251,13 @@ public class MainActivity extends ActionBarActivity implements ActionBar.OnNavig
 
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
-		outState.putInt("1", actionBar.getSelectedNavigationIndex());
+		outState.putInt(Constants.BUNDLE_KEY_SELECTED_PHOTO_INDEX, actionBar.getSelectedNavigationIndex());
 		super.onSaveInstanceState(outState);
 	}
 
 	@Override
 	protected void onRestoreInstanceState(Bundle savedInstanceState) {
-		actionBar.setSelectedNavigationItem(savedInstanceState.getInt("1"));
+		actionBar.setSelectedNavigationItem(savedInstanceState.getInt(Constants.BUNDLE_KEY_SELECTED_PHOTO_INDEX));
 		super.onRestoreInstanceState(savedInstanceState);
 	}
 
@@ -290,11 +287,14 @@ public class MainActivity extends ActionBarActivity implements ActionBar.OnNavig
 			if (mapFragement.isVisible()) {
 				mapFragement.addPhotoToMap(photo);
 			}
+
 		} catch (SQLException e) {
 			Utils.handleException(MainActivity.class.getName(), e);
 		} catch (IOException e) {
 			Utils.handleException(MainActivity.class.getName(), e);
 		}
+		
+		startService(new Intent(MainActivity.this, UploadService.class));
 	}
 
 	@Override
@@ -353,22 +353,22 @@ public class MainActivity extends ActionBarActivity implements ActionBar.OnNavig
 	@Override
 	public void dialogCloseWithNegative() {
 		try {
-			ArrayList<Photo> photos = new ArrayList<Photo>(PhotoMap.getInstance().getPhotoMapDAO().queryAllUnploaded());
-			
+			ArrayList<Photo> photos = new ArrayList<Photo>(PhotoMap.getInstance().getPhotoMapDAO().queryAllUnuploaded());
+
 			for (Photo photo : photos) {
 				File file = new File(photo.getFilePath());
-				
+
 				if (file.exists()) {
 					file.delete();
 				}
 			}
-			
+
 			PhotoMap.getInstance().getPhotoMapDAO().delete(photos);
 			if (mapFragement.isVisible()) {
 				mapFragement.updateAllMarkers();
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
-		}		
+		}
 	}
 }

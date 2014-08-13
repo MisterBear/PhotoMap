@@ -14,6 +14,7 @@ import com.dropbox.client2.session.AccessTokenPair;
 import com.dropbox.client2.session.AppKeyPair;
 import com.itechart.photomap.database.DatabaseHelper;
 import com.itechart.photomap.database.PhotoMapDAO;
+import com.itechart.photomap.utils.DropboxImageThumnailLoader;
 import com.itechart.photomap.utils.Utils;
 import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiscCache;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -29,6 +30,7 @@ public class PhotoMap extends Application {
 	private DatabaseHelper databaseHelper;
 	private DropboxAPI<AndroidAuthSession> mApi;
 	private ImageLoader imageLoader;
+	private DropboxImageThumnailLoader dropboxThumbnailLoader;
 
 	public PhotoMap() {
 		instance = this;
@@ -39,6 +41,7 @@ public class PhotoMap extends Application {
 		checkDirectoriesWithMedia();
 		
 		databaseHelper = new DatabaseHelper(PhotoMap.this);
+		dropboxThumbnailLoader = new DropboxImageThumnailLoader();
 		
 		AndroidAuthSession session = buildSession();
 		mApi = new DropboxAPI<AndroidAuthSession>(session);
@@ -143,7 +146,7 @@ public class PhotoMap extends Application {
 		return imageLoader;
 	}
 
-	public void setImageLoader(ImageLoader imageLoader) {
-		this.imageLoader = imageLoader;
+	public DropboxImageThumnailLoader getDropboxThumbnailLoader() {
+		return dropboxThumbnailLoader;
 	}
 }

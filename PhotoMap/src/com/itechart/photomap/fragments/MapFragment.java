@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 
+import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.media.ExifInterface;
@@ -23,23 +24,28 @@ import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.InfoWindowAdapter;
+import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.maps.android.clustering.ClusterManager;
+import com.itechart.photomap.Constants;
 import com.itechart.photomap.PhotoMap;
 import com.itechart.photomap.R;
+import com.itechart.photomap.activities.FullScreenView;
 import com.itechart.photomap.activities.MainActivity;
 import com.itechart.photomap.database.model.Photo;
-import com.itechart.photomap.model.Point;
+import com.itechart.photomap.model.PointMarker;
 import com.itechart.photomap.utils.Utils;
 
-public class MapFragment extends Fragment {
+public class MapFragment extends Fragment implements ClusterManager.OnClusterClickListener<PointMarker>, ClusterManager.OnClusterInfoWindowClickListener<PointMarker>, ClusterManager.OnClusterItemClickListener<PointMarker>, ClusterManager.OnClusterItemInfoWindowClickListener<PointMarker> {
 	private GoogleMap mMap;
 	private HashMap<Marker, Photo> mMarkersHashMap;
-	private static final int REQUEST_IMAGE_CAPTURE = 100;
 	private static View view;
+	private ArrayList<Photo> photosList;
+    private ClusterManager<PointMarker> mClusterManager;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -115,13 +121,29 @@ public class MapFragment extends Fragment {
 				return true;
 			}
 		});
+		
+		mMap.setOnInfoWindowClickListener(new OnInfoWindowClickListener() {
+			
+			@Override
+			public void onInfoWindowClick(Marker marker) {
+				final Photo photo = mMarkersHashMap.get(marker);
+
+				
+				Intent fullscreenview = new Intent(getActivity(), FullScreenView.class);
+
+				fullscreenview.putParcelableArrayListExtra(Constants.BUNDLE_KEY_PHOTOS_ARRAY_LIST, photosList);
+				fullscreenview.putExtra(Constants.BUNDLE_KEY_SELECTED_PHOTO_INDEX, photosList.indexOf(photo));
+
+				startActivity(fullscreenview);
+			}
+		});
 	}
 
 	public void addAllPhotoToMap() {
 		try {
-			ArrayList<Photo> photoList = new ArrayList<Photo>(PhotoMap.getInstance().getPhotoMapDAO().queryForAll());
+			photosList = new ArrayList<Photo>(PhotoMap.getInstance().getPhotoMapDAO().queryForAll());
 
-			for (Photo photo : photoList) {
+			for (Photo photo : photosList) {
 				addPhotoToMap(photo);
 			}
 
@@ -144,9 +166,9 @@ public class MapFragment extends Fragment {
 			String latitudeRef = exif.getAttribute(ExifInterface.TAG_GPS_LATITUDE_REF);
 			String longitudeRef = exif.getAttribute(ExifInterface.TAG_GPS_LONGITUDE_REF);
 
-			Point point = Utils.parseGeoTag(latitude, longitude, latitudeRef, longitudeRef);
+			LatLng point = Utils.parseGeoTag(latitude, longitude, latitudeRef, longitudeRef);
 
-			Marker marker = mMap.addMarker(new MarkerOptions().position(new LatLng(point.getLatitude(), point.getLongitude())).icon(BitmapDescriptorFactory.defaultMarker(photo.getIsUploaded() ? BitmapDescriptorFactory.HUE_GREEN : BitmapDescriptorFactory.HUE_RED)).title(photo.getPhotoName()));
+			Marker marker = mMap.addMarker(new MarkerOptions().position(point).icon(BitmapDescriptorFactory.defaultMarker(photo.getIsUploaded() ? BitmapDescriptorFactory.HUE_GREEN : BitmapDescriptorFactory.HUE_RED)).title(photo.getPhotoName()));
 
 			mMarkersHashMap.put(marker, photo);
 		} else {
@@ -182,7 +204,7 @@ public class MapFragment extends Fragment {
 			TextView photo_create_date = (TextView) v.findViewById(R.id.pm_create_date_tv);
 
 			ivPhoto.setImageBitmap(BitmapFactory.decodeFile(photo.getFilePath()));
-
+			
 			photo_name.setText(photo.getPhotoName());
 			java.text.DateFormat dateFormat = android.text.format.DateFormat.getDateFormat(getActivity().getApplicationContext());
 

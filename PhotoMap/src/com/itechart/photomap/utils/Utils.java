@@ -3,6 +3,8 @@ package com.itechart.photomap.utils;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Date;
@@ -17,6 +19,7 @@ import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Environment;
 import android.text.TextUtils;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,13 +29,26 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.itechart.photomap.Constants;
+import com.itechart.photomap.PhotoMap;
 import com.itechart.photomap.R;
-import com.itechart.photomap.model.Point;
 import com.itechart.photomap.utils.interfaces.AlertDialogApplyListener;
 import com.itechart.photomap.utils.interfaces.AlertDialogWithEditTextListener;
 
 public class Utils {
+	public static int getDisplayWidth() {
+		DisplayMetrics metrics = PhotoMap.getInstance().getResources().getDisplayMetrics();
+
+		return metrics.widthPixels;
+	}
+
+	public static int getDisplayHeight() {
+		DisplayMetrics metrics = PhotoMap.getInstance().getResources().getDisplayMetrics();
+
+		return metrics.heightPixels;
+	}
+	
 	public static void handleException(String message, Throwable t) {
 		String exception = "";
 
@@ -182,24 +198,24 @@ public class Utils {
 		return rv.toArray(new String[rv.size()]);
 	}
 
-	public static Point parseGeoTag(String latitude, String longitude, String latitudeRef, String longtitudeRef) {
-		Point resultPoint = new Point();
-
+	public static LatLng parseGeoTag(String latitude, String longitude, String latitudeRef, String longtitudeRef) {
+		Float latitudeNumb = 0.0f, longitudeNumb = 0.0f;
 		if ((latitude != null) && (latitudeRef != null) && (longitude != null) && (longtitudeRef != null)) {
 
 			if (latitudeRef.equals("N")) {
-				resultPoint.setLatitude(convertToDegree(latitude));
+				latitudeNumb = (convertToDegree(latitude));
 			} else {
-				resultPoint.setLatitude(0 - convertToDegree(longitude));
+				latitudeNumb = (0 - convertToDegree(longitude));
 			}
 
 			if (longtitudeRef.equals("E")) {
-				resultPoint.setLongitude(convertToDegree(longitude));
+				longitudeNumb = (convertToDegree(longitude));
 			} else {
-				resultPoint.setLongitude(0 - convertToDegree(latitude));
+				longitudeNumb = (0 - convertToDegree(latitude));
 			}
+		}		
 
-		}
+		LatLng resultPoint = new LatLng(latitudeNumb,longitudeNumb);
 
 		return resultPoint;
 	}
@@ -228,4 +244,23 @@ public class Utils {
 		return result;
 
 	};
+	
+	public static void CopyStream(InputStream is, OutputStream os) {
+		final int buffer_size = 1024;
+		try {
+			byte[] bytes = new byte[buffer_size];
+
+			for (;;) {
+				int count = is.read(bytes, 0, buffer_size);
+
+				if (count == -1) {
+					break;
+				}
+
+				os.write(bytes, 0, count);
+			}
+		} catch (Exception ex) {
+
+		}
+	}
 }

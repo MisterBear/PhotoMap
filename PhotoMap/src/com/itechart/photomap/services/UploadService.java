@@ -31,7 +31,7 @@ import com.itechart.photomap.database.model.Photo;
 public class UploadService extends IntentService {
 	private DropboxAPI<AndroidAuthSession> mApi;
 	private static final String tempFolderPath = "/temp";
-	private static final String photosFolderPath = "/Photos/";
+	public static final String photosFolderPath = "/Photos/";
 
 	public UploadService() {
 		super(UploadService.class.getName());
@@ -47,7 +47,7 @@ public class UploadService extends IntentService {
 	@Override
 	protected void onHandleIntent(Intent intent) {
 		try {
-			ArrayList<Photo> photos = new ArrayList<Photo>(PhotoMap.getInstance().getPhotoMapDAO().queryAllUnploaded());
+			ArrayList<Photo> photos = new ArrayList<Photo>(PhotoMap.getInstance().getPhotoMapDAO().queryAllUnuploaded());
 
 			for (Photo photo : photos) {
 				File file = new File(photo.getFilePath());

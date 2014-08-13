@@ -14,7 +14,7 @@ public class PhotoMapDAO extends BaseDaoImpl<Photo, Integer>{
 		super(connectionSource, dataClass);
 	}
 	
-	public List<Photo> queryAllUnploaded() throws SQLException {
+	public List<Photo> queryAllUnuploaded() throws SQLException {
 		QueryBuilder<Photo, Integer> queryBuilder = queryBuilder();
         queryBuilder.where().eq(Photo.IS_UPLOADED_FIELD_NAME, false);
         PreparedQuery<Photo> preparedQuery = queryBuilder.prepare();
@@ -22,7 +22,15 @@ public class PhotoMapDAO extends BaseDaoImpl<Photo, Integer>{
         return fileCacheRecordsList;
 	}
 	
+	public List<Photo> queryAllUploaded() throws SQLException {
+		QueryBuilder<Photo, Integer> queryBuilder = queryBuilder();
+        queryBuilder.where().eq(Photo.IS_UPLOADED_FIELD_NAME, true);
+        PreparedQuery<Photo> preparedQuery = queryBuilder.prepare();
+        List<Photo> fileCacheRecordsList = query(preparedQuery);
+        return fileCacheRecordsList;
+	}
+	
 	public void deleteAllNotUploaded() throws SQLException {
-		delete(queryAllUnploaded());
+		delete(queryAllUnuploaded());
 	}
 }

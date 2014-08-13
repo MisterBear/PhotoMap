@@ -17,7 +17,7 @@ import com.itechart.photomap.R;
 import com.itechart.photomap.database.model.Photo;
 
 public class PhotoListAdapter extends BaseAdapter {
-	ArrayList<Photo> photoList;
+	private ArrayList<Photo> photoList;
 	private LayoutInflater inflater;
 	
 	public PhotoListAdapter(Context context, ArrayList<Photo> photoList)
@@ -76,4 +76,11 @@ public class PhotoListAdapter extends BaseAdapter {
 		}
 	}
 
+	public ArrayList<Photo> getPhotoList() {
+		return photoList;
+	}
+
+	public void setPhotoList(ArrayList<Photo> photoList) {
+		this.photoList = photoList;
+	} 
 }

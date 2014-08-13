@@ -9,4 +9,8 @@ public class Constants {
 
 	public static final String BROADCAST_ACTION_FINISH_UPLOAD = "com.itechart.photomap.BROADCAST_ACTION_FINISH_UPLOAD";
 	public static final String BROADCAST_ACTION_CONNECTION_STATE_CHANGE = "com.itechart.photomap.BROADCAST_ACTION_CONNECTION_STATE_CHANGE";
+	
+	public static final String BUNDLE_KEY_SELECTED_NAVIGATION_TAB = "PHOTOS_ARRAY_LIST_BUNDLE_KEY";
+	public static final String BUNDLE_KEY_PHOTOS_ARRAY_LIST = "PHOTOS_ARRAY_LIST_BUNDLE_KEY";
+	public static final String BUNDLE_KEY_SELECTED_PHOTO_INDEX = "SELECTED_PHOTO_INDEX_BUNDLE_KEY";
 }
