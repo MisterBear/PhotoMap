@@ -15,4 +15,6 @@
     <string name="app_key_dropbox">lc0f6pvv7y8vwdl</string>
     <string name="app_secret_dropbox">w2v1g5sijuewxxz</string>
     <string name="upload_items_message">Upload photo, that stored locally? If canceled all photos ,that not yet been uploaded will be deleted.</string>
+    <string name="link_dropbox_message">For start working with an app you need to link the app with your dropbox account. Do you want to do it now?</string>
+	<string name="tap_to_see_all">Tap to see all photos.</string>
 </resources>

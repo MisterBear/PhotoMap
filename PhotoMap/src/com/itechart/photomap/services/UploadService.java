@@ -57,54 +57,56 @@ public class UploadService extends IntentService {
 
 					continue;
 				}
-				
+
 				Bitmap bitmap = BitmapFactory.decodeFile(photo.getFilePath());
-				
-				bitmap = Bitmap.createScaledBitmap(bitmap, bitmap.getWidth()/2, bitmap.getHeight()/2, true);
+
+				bitmap = Bitmap.createScaledBitmap(bitmap, bitmap.getWidth() / 2, bitmap.getHeight() / 2, true);
 				File temp = File.createTempFile("pht", "temp");
-				
+
 				FileOutputStream out = new FileOutputStream(temp);
-				bitmap.compress(CompressFormat.JPEG, 100, out); 
-				
+				bitmap.compress(CompressFormat.JPEG, 100, out);
+
 				out.flush();
 				out.close();
-				
+
 				InputStream in = new FileInputStream(temp);
 
-				String path = tempFolderPath + "/"  + file.getName();
+				String path = tempFolderPath + "/" + file.getName();
 				UploadRequest mRequest = mApi.putFileOverwriteRequest(path, in, temp.length(), null);
 
 				if (mRequest != null) {
 					mRequest.upload();
 				}
-				
+
 				temp.delete();
 				in.close();
 			}
 
 			for (Photo photo : photos) {
 				File file = new File(photo.getFilePath());
-				
-				mApi.copy(tempFolderPath  + "/" + file.getName(), photosFolderPath + file.getName());
-				mApi.delete(tempFolderPath  + "/" + file.getName());		
 
+				try {
+					mApi.copy(tempFolderPath + "/" + file.getName(), photosFolderPath + file.getName());
+
+					mApi.delete(tempFolderPath + "/" + file.getName());
+				} catch (DropboxServerException e) {
+				}
 				photo.setIsUploaded(true);
-				
+
 				PhotoMap.getInstance().getPhotoMapDAO().update(photo);
 			}
 			mApi.delete(tempFolderPath);
-			
+
 			sendBroadcast(new Intent(Constants.BROADCAST_ACTION_FINISH_UPLOAD));
 		} catch (DropboxUnlinkedException e) {
 		} catch (DropboxFileSizeException e) {
 		} catch (DropboxPartialFileException e) {
-		} catch (DropboxServerException e) {
 		} catch (DropboxIOException e) {
 		} catch (DropboxParseException e) {
 		} catch (DropboxException e) {
 		} catch (IOException e) {
-			
-		}catch (SQLException e) {
+
+		} catch (SQLException e) {
 		}
 	}
 }

@@ -10,7 +10,7 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
         android:scrollbars="none"
-        android:numColumns="2" >
+        android:numColumns="3" >
     </GridView>
 
 </RelativeLayout>

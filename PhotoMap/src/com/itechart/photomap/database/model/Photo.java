@@ -13,6 +13,8 @@ public class Photo implements Parcelable{
 	public static final String CREATE_DATE_FIELD_NAME = "createDate";
 	public static final String FILE_PATH_FIELD_NAME = "filePath";
 	public static final String IS_UPLOADED_FIELD_NAME = "isUploaded";
+	public static final String LATITUDE_FIELD_NAME = "latitude";
+	public static final String LONGITUDE_FIELD_NAME = "longitude";
 	
 	@DatabaseField(generatedId = true)
 	private long id;
@@ -24,15 +26,21 @@ public class Photo implements Parcelable{
 	private String filePath;
 	@DatabaseField(dataType = DataType.BOOLEAN_OBJ)
 	private Boolean isUploaded;
+	@DatabaseField(dataType = DataType.FLOAT_OBJ)
+	private Float latitude;
+	;@DatabaseField(dataType = DataType.FLOAT_OBJ)
+	private Float longitude;
 	
 	public Photo() {
 		this.isUploaded = false;
 	}
 	
-	public Photo(String photoName, String filePath, long createDate) {
+	public Photo(String photoName, String filePath, long createDate, Float latitude, Float longitude) {
 		this.photoName = photoName;
 		this.filePath = filePath;
-		this.createDate = createDate;
+		this.createDate = createDate;		
+		this.latitude = latitude;
+		this.longitude = longitude;
 		this.isUploaded = false;
 	}
 	
@@ -40,6 +48,8 @@ public class Photo implements Parcelable{
 		photoName = in.readString();
 		createDate = in.readLong();
 		filePath = in.readString();
+		latitude = in.readFloat();
+		longitude = in.readFloat();
 		isUploaded = in.readByte() == 1;
 	}
 	
@@ -83,6 +93,22 @@ public class Photo implements Parcelable{
 		this.isUploaded = isUploaded;
 	}
 
+	public Float getLatitude() {
+		return latitude;
+	}
+
+	public void setLatitude(Float latitude) {
+		this.latitude = latitude;
+	}
+
+	public Float getLongitude() {
+		return longitude;
+	}
+
+	public void setLongitude(Float longitude) {
+		this.longitude = longitude;
+	}
+
 	@Override
 	public int describeContents() {
 		return 0;
@@ -93,6 +119,8 @@ public class Photo implements Parcelable{
 		dest.writeString(photoName);
 		dest.writeLong(createDate);
 		dest.writeString(filePath);
+		dest.writeFloat(latitude);
+		dest.writeFloat(longitude);
 		dest.writeByte((byte)(isUploaded ? 1 : 0));
 	}
 	

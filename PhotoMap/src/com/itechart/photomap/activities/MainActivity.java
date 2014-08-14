@@ -30,6 +30,7 @@ import com.dropbox.client2.session.AccessTokenPair;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.location.LocationClient;
+import com.google.android.gms.maps.model.LatLng;
 import com.itechart.photomap.Constants;
 import com.itechart.photomap.PhotoMap;
 import com.itechart.photomap.R;
@@ -48,6 +49,9 @@ public class MainActivity extends ActionBarActivity implements ActionBar.OnNavig
 	public static final int GRID_PAGE = 2;
 	public static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 100;
 
+	public static final int UPLOAD_DIALOG_ID = 200;
+	public static final int LINK_TO_DROPBOX_DIALOG_ID = 201;
+
 	DropboxAPI<AndroidAuthSession> mApi;
 
 	private BroadcastReceiver uploadReceiver;
@@ -60,6 +64,8 @@ public class MainActivity extends ActionBarActivity implements ActionBar.OnNavig
 	private final PhotoListFragment photoListFragement = new PhotoListFragment();
 	private final PhotoGridFragment photoGridFragement = new PhotoGridFragment();
 	private String photoForSave;
+	private Boolean initialScroll = true;
+	private int lastDialogId = -1;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -77,7 +83,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.OnNavig
 						try {
 							photos = PhotoMap.getInstance().getPhotoMapDAO().queryAllUnuploaded();
 							if (photos.size() > 0) {
-								Utils.showDilogApplyDialog(MainActivity.this, getString(R.string.upload_items_message), getString(android.R.string.yes), getString(android.R.string.no), MainActivity.this);
+								showUploadDialog();
 							}
 						} catch (SQLException e) {
 							e.printStackTrace();
@@ -106,6 +112,8 @@ public class MainActivity extends ActionBarActivity implements ActionBar.OnNavig
 	@Override
 	protected void onResume() {
 		super.onResume();
+		checkUploadDialog();
+
 		IntentFilter intFilt = new IntentFilter(Constants.BROADCAST_ACTION_FINISH_UPLOAD);
 		registerReceiver(uploadReceiver, intFilt);
 		intFilt = new IntentFilter(Constants.BROADCAST_ACTION_CONNECTION_STATE_CHANGE);
@@ -113,19 +121,38 @@ public class MainActivity extends ActionBarActivity implements ActionBar.OnNavig
 
 		AndroidAuthSession session = mApi.getSession();
 
-		// The next part must be inserted in the onResume() method of the
-		// activity from which session.startAuthentication() was called, so
-		// that Dropbox authentication completes properly.
 		if (session.authenticationSuccessful()) {
 			try {
-				// Mandatory call to complete the auth
 				session.finishAuthentication();
 
-				// Store it locally in our app for later use
 				storeAuth(session);
 			} catch (IllegalStateException e) {
 			}
+		}		
+
+		checkDropboxApi();
+	}
+
+	void checkUploadDialog() {
+		if (PhotoMap.getInstance().getSettings().isShowUploadDialog()) {
+			showUploadDialog();
 		}
+	}
+
+	void checkDropboxApi() {
+		if (!mApi.getSession().isLinked()) {
+			showLinkDroboxAccountDialog();
+		}
+	}
+
+	void showUploadDialog() {
+		lastDialogId = UPLOAD_DIALOG_ID;
+		Utils.showDilogApplyDialog(MainActivity.this, getString(R.string.upload_items_message), getString(android.R.string.yes), getString(android.R.string.no), MainActivity.this);
+	}
+
+	void showLinkDroboxAccountDialog() {
+		lastDialogId = LINK_TO_DROPBOX_DIALOG_ID;
+		Utils.showDilogApplyDialog(MainActivity.this, getString(R.string.link_dropbox_message), getString(android.R.string.yes), getString(android.R.string.no), MainActivity.this);
 	}
 
 	@Override
@@ -157,7 +184,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.OnNavig
 
 		final String[] dropdownValues = getResources().getStringArray(R.array.navigation_menu);
 
-		ArrayAdapter<String> adapter = new ArrayAdapter<String>(actionBar.getThemedContext(), android.R.layout.simple_spinner_item, android.R.id.text1, dropdownValues);
+		ArrayAdapter<String> adapter = new ArrayAdapter<String>(actionBar.getThemedContext(), R.layout.row_menu, R.id.rm_tv_option, dropdownValues);
 
 		actionBar.setListNavigationCallbacks(adapter, MainActivity.this);
 	}
@@ -207,11 +234,6 @@ public class MainActivity extends ActionBarActivity implements ActionBar.OnNavig
 		switch (item.getItemId()) {
 		case R.id.ma_create_photo_it:
 			takePicture();
-
-			break;
-
-		case R.id.ma_link_dropbox_account:
-			mApi.getSession().startOAuth2Authentication(MainActivity.this);
 
 			break;
 
@@ -281,19 +303,22 @@ public class MainActivity extends ActionBarActivity implements ActionBar.OnNavig
 		photo.setCreateDate(new Date().getTime());
 		photo.setFilePath(fileForSave.getAbsolutePath());
 
+		LatLng geotag = Utils.getGeotagFromPhotoFile(photo);
+
+		photo.setLatitude(Double.valueOf(geotag.latitude).floatValue());
+		photo.setLongitude(Double.valueOf(geotag.longitude).floatValue());
+
 		try {
 			PhotoMap.getInstance().getPhotoMapDAO().create(photo);
 
 			if (mapFragement.isVisible()) {
 				mapFragement.addPhotoToMap(photo);
+				mapFragement.clusterMarkers();
 			}
-
 		} catch (SQLException e) {
 			Utils.handleException(MainActivity.class.getName(), e);
-		} catch (IOException e) {
-			Utils.handleException(MainActivity.class.getName(), e);
 		}
-		
+
 		startService(new Intent(MainActivity.this, UploadService.class));
 	}
 
@@ -303,8 +328,9 @@ public class MainActivity extends ActionBarActivity implements ActionBar.OnNavig
 
 	@Override
 	public void onConnected(Bundle connectionHint) {
-		if (mapFragement.isVisible()) {
+		if (mapFragement.isVisible() && initialScroll) {
 			mapFragement.scrollMapToCurrentPostion(mLocationClient.getLastLocation());
+			initialScroll = false;
 		}
 	}
 
@@ -347,28 +373,51 @@ public class MainActivity extends ActionBarActivity implements ActionBar.OnNavig
 
 	@Override
 	public void dialogCloseWithPositive() {
-		startService(new Intent(MainActivity.this, UploadService.class));
+		switch (lastDialogId) {
+		case UPLOAD_DIALOG_ID:
+			PhotoMap.getInstance().getSettings().setshowUploadDialog(false);
+			startService(new Intent(MainActivity.this, UploadService.class));
+
+			break;
+		case LINK_TO_DROPBOX_DIALOG_ID:
+			mApi.getSession().startOAuth2Authentication(MainActivity.this);
+
+			break;
+		default:
+			break;
+		}
+
 	}
 
 	@Override
 	public void dialogCloseWithNegative() {
-		try {
-			ArrayList<Photo> photos = new ArrayList<Photo>(PhotoMap.getInstance().getPhotoMapDAO().queryAllUnuploaded());
+		switch (lastDialogId) {
+		case UPLOAD_DIALOG_ID:
+			PhotoMap.getInstance().getSettings().setshowUploadDialog(false);
+			try {
+				ArrayList<Photo> photos = new ArrayList<Photo>(PhotoMap.getInstance().getPhotoMapDAO().queryAllUnuploaded());
 
-			for (Photo photo : photos) {
-				File file = new File(photo.getFilePath());
+				for (Photo photo : photos) {
+					File file = new File(photo.getFilePath());
 
-				if (file.exists()) {
-					file.delete();
+					if (file.exists()) {
+						file.delete();
+					}
 				}
+
+				PhotoMap.getInstance().getPhotoMapDAO().delete(photos);
+				if (mapFragement.isVisible()) {
+					mapFragement.updateAllMarkers();
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
 			}
 
-			PhotoMap.getInstance().getPhotoMapDAO().delete(photos);
-			if (mapFragement.isVisible()) {
-				mapFragement.updateAllMarkers();
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
+			break;
+		case LINK_TO_DROPBOX_DIALOG_ID:
+			finish();
+		default:
+			break;
 		}
 	}
 }

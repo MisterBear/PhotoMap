@@ -31,7 +31,8 @@ public class PhotoMap extends Application {
 	private DropboxAPI<AndroidAuthSession> mApi;
 	private ImageLoader imageLoader;
 	private DropboxImageThumnailLoader dropboxThumbnailLoader;
-
+    private Settings settings;
+    
 	public PhotoMap() {
 		instance = this;
 	}
@@ -42,6 +43,7 @@ public class PhotoMap extends Application {
 		
 		databaseHelper = new DatabaseHelper(PhotoMap.this);
 		dropboxThumbnailLoader = new DropboxImageThumnailLoader();
+		settings = new Settings(PhotoMap.this);
 		
 		AndroidAuthSession session = buildSession();
 		mApi = new DropboxAPI<AndroidAuthSession>(session);
@@ -149,4 +151,8 @@ public class PhotoMap extends Application {
 	public DropboxImageThumnailLoader getDropboxThumbnailLoader() {
 		return dropboxThumbnailLoader;
 	}
+
+	public Settings getSettings() {
+		return settings;
+	}	
 }

@@ -11,7 +11,8 @@ public class ConnectionChangeListener extends BroadcastReceiver {
 
 	public void onReceive(Context context, Intent intent) {
 		if (PhotoMap.getInstance().isConnectionAvailable()) {
-			 context.sendBroadcast(new Intent(Constants.BROADCAST_ACTION_CONNECTION_STATE_CHANGE));
+			PhotoMap.getInstance().getSettings().setshowUploadDialog(true);
+			context.sendBroadcast(new Intent(Constants.BROADCAST_ACTION_CONNECTION_STATE_CHANGE));
 		}
 	}
 }

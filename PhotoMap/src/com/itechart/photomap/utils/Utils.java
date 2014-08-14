@@ -16,8 +16,10 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.graphics.Bitmap;
+import android.media.ExifInterface;
 import android.os.Build;
 import android.os.Environment;
+import android.text.InputType;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -33,6 +35,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.itechart.photomap.Constants;
 import com.itechart.photomap.PhotoMap;
 import com.itechart.photomap.R;
+import com.itechart.photomap.database.model.Photo;
 import com.itechart.photomap.utils.interfaces.AlertDialogApplyListener;
 import com.itechart.photomap.utils.interfaces.AlertDialogWithEditTextListener;
 
@@ -48,7 +51,7 @@ public class Utils {
 
 		return metrics.heightPixels;
 	}
-	
+
 	public static void handleException(String message, Throwable t) {
 		String exception = "";
 
@@ -67,6 +70,7 @@ public class Utils {
 		LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
 		lp.setMargins(5, 2, 5, 2);
 		input.setLayoutParams(lp);
+		input.setInputType(InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
 
 		final AlertDialog alertDialog = new AlertDialog.Builder(context).setView(input).setTitle(title).setCancelable(false).setPositiveButton(context.getString(android.R.string.ok), new OnClickListener() {
 
@@ -81,11 +85,11 @@ public class Utils {
 
 		alertDialog.show();
 	}
-	
+
 	public static void showDilogApplyDialog(Context context, String message, String positiveButtonTitle, String negativeButtonTitle, final AlertDialogApplyListener listener) {
 		LayoutInflater factory = LayoutInflater.from(context);
 		LinearLayout alertDialog = (LinearLayout) factory.inflate(R.layout.alert_dialog_apply, null);
-		
+
 		final TextView titleTextView = (TextView) alertDialog.findViewById(R.id.alert_dialog_apply_text_view);
 		titleTextView.setText(message);
 
@@ -94,9 +98,9 @@ public class Utils {
 
 		final Button negativeButton = (Button) alertDialog.findViewById(R.id.alert_dialog_apply_negative_button);
 		negativeButton.setText(negativeButtonTitle);
-		
+
 		final AlertDialog dialog = new AlertDialog.Builder(context).setView(alertDialog).create();
-		
+
 		positiveButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -114,7 +118,7 @@ public class Utils {
 		});
 
 		dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-		
+
 		dialog.show();
 	}
 
@@ -213,9 +217,9 @@ public class Utils {
 			} else {
 				longitudeNumb = (0 - convertToDegree(latitude));
 			}
-		}		
+		}
 
-		LatLng resultPoint = new LatLng(latitudeNumb,longitudeNumb);
+		LatLng resultPoint = new LatLng(latitudeNumb, longitudeNumb);
 
 		return resultPoint;
 	}
@@ -244,7 +248,7 @@ public class Utils {
 		return result;
 
 	};
-	
+
 	public static void CopyStream(InputStream is, OutputStream os) {
 		final int buffer_size = 1024;
 		try {
@@ -262,5 +266,25 @@ public class Utils {
 		} catch (Exception ex) {
 
 		}
+	}
+
+	public static LatLng getGeotagFromPhotoFile(Photo photo) {
+		LatLng pointCord = null;
+		try {
+			File photoFile = new File(photo.getFilePath());
+			ExifInterface exif = new ExifInterface(photoFile.getAbsolutePath());
+
+			String latitude = exif.getAttribute(ExifInterface.TAG_GPS_LATITUDE);
+			String longitude = exif.getAttribute(ExifInterface.TAG_GPS_LONGITUDE);
+			String latitudeRef = exif.getAttribute(ExifInterface.TAG_GPS_LATITUDE_REF);
+			String longitudeRef = exif.getAttribute(ExifInterface.TAG_GPS_LONGITUDE_REF);
+
+			pointCord = Utils.parseGeoTag(latitude, longitude, latitudeRef, longitudeRef);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return pointCord;
+		}
+		return pointCord;
 	}
 }
