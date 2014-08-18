@@ -1,4 +1,4 @@
-package com.itechart.photomap.activities;
+package com.itechart.photomap.view.activities;
 
 import java.util.ArrayList;
 
@@ -9,8 +9,8 @@ import android.support.v7.app.ActionBarActivity;
 
 import com.itechart.photomap.Constants;
 import com.itechart.photomap.R;
-import com.itechart.photomap.adapters.GalleryAdapter;
 import com.itechart.photomap.database.model.Photo;
+import com.itechart.photomap.view.adapters.GalleryAdapter;
 
 public class FullScreenView extends ActionBarActivity {
 	private GalleryAdapter mAdapter;

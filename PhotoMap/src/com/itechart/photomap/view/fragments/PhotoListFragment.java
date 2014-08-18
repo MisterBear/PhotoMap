@@ -1,4 +1,4 @@
-package com.itechart.photomap.fragments;
+package com.itechart.photomap.view.fragments;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -17,9 +17,9 @@ import android.widget.ListView;
 import com.itechart.photomap.Constants;
 import com.itechart.photomap.PhotoMap;
 import com.itechart.photomap.R;
-import com.itechart.photomap.activities.FullScreenView;
-import com.itechart.photomap.adapters.PhotoListAdapter;
 import com.itechart.photomap.database.model.Photo;
+import com.itechart.photomap.view.activities.FullScreenView;
+import com.itechart.photomap.view.adapters.PhotoListAdapter;
 
 public class PhotoListFragment extends Fragment {
 	private ListView lvPhoto;

@@ -17,6 +17,7 @@ import com.itechart.photomap.database.PhotoMapDAO;
 import com.itechart.photomap.utils.DropboxImageThumnailLoader;
 import com.itechart.photomap.utils.Utils;
 import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiscCache;
+import com.nostra13.universalimageloader.cache.memory.impl.LruMemoryCache;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
@@ -44,34 +45,34 @@ public class PhotoMap extends Application {
 		databaseHelper = new DatabaseHelper(PhotoMap.this);
 		dropboxThumbnailLoader = new DropboxImageThumnailLoader();
 		settings = new Settings(PhotoMap.this);
-		
+
 		AndroidAuthSession session = buildSession();
 		mApi = new DropboxAPI<AndroidAuthSession>(session);
 		
 		File cacheDir = StorageUtils.getCacheDirectory(this);
 		
-		 DisplayImageOptions options = new DisplayImageOptions.Builder()
-	    	//.imageScaleType(ImageScaleType.EXACTLY)
+		DisplayImageOptions options = new DisplayImageOptions.Builder()
 	    	.resetViewBeforeLoading(true)
 	    	.cacheInMemory(true)
 	    	.cacheOnDisk(true)
 	    	.considerExifParams(true)
-	    	//.displayer(new FadeInBitmapDisplayer(2000))
 	    .build();
 
-     ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(getApplicationContext())
-     	.threadPriority(Thread.MAX_PRIORITY)
-     	.defaultDisplayImageOptions(options)
-     	.tasksProcessingOrder(QueueProcessingType.LIFO)
-     	.imageDownloader(new BaseImageDownloader(this))
-     	.diskCache(new UnlimitedDiscCache(cacheDir))
-     	//.memoryCacheSize(4 * 1024 * 1024)
+		ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(getApplicationContext())
+	     	.threadPriority(Thread.MAX_PRIORITY)
+	     	.defaultDisplayImageOptions(options)
+	     	.tasksProcessingOrder(QueueProcessingType.LIFO)
+	     	.imageDownloader(new BaseImageDownloader(this))
+	     	.diskCache(new UnlimitedDiscCache(cacheDir))
+	     	.memoryCache(new LruMemoryCache(2 * 1024 * 1024))
+	        .memoryCacheSize(2 * 1024 * 1024)
+	        .memoryCacheSizePercentage(13)
      	.build();
 
-     imageLoader = ImageLoader.getInstance();
-
-     imageLoader.init(config);
-     imageLoader.handleSlowNetwork(true);
+	    imageLoader = ImageLoader.getInstance();
+	
+	    imageLoader.init(config);
+	    imageLoader.handleSlowNetwork(true);
 
 		super.onCreate();
 	}
@@ -86,6 +87,19 @@ public class PhotoMap extends Application {
 		for (int index = 0; index < temp.length; index++) {
 			if (new File(temp[index] + "/DCIM").exists()) {
 				directoriesWithMedia.add(temp[index] + "/DCIM/");
+			}
+		}
+		
+		if (directoriesWithMedia.size() > 0) {
+			String path = directoriesWithMedia.get(0);
+			
+			if (path.endsWith("/DCIM/")) {
+				path = path.concat("Photomap/");
+				
+				File appDirectory = new File(path);
+				appDirectory.mkdir();
+				
+				directoriesWithMedia.set(0, path);
 			}
 		}
 	}

@@ -1,4 +1,4 @@
-package com.itechart.photomap.adapters;
+package com.itechart.photomap.view.adapters;
 
 import java.text.DateFormat;
 import java.util.ArrayList;

@@ -1,4 +1,4 @@
-package com.itechart.photomap.fragments;
+package com.itechart.photomap.view.fragments;
 
 import java.io.File;
 import java.sql.SQLException;
@@ -37,10 +37,10 @@ import com.google.maps.android.clustering.view.DefaultClusterRenderer;
 import com.itechart.photomap.Constants;
 import com.itechart.photomap.PhotoMap;
 import com.itechart.photomap.R;
-import com.itechart.photomap.activities.FullScreenView;
-import com.itechart.photomap.activities.MainActivity;
 import com.itechart.photomap.database.model.Photo;
 import com.itechart.photomap.model.PointMarker;
+import com.itechart.photomap.view.activities.FullScreenView;
+import com.itechart.photomap.view.activities.MainActivity;
 
 public class MapFragment extends Fragment implements ClusterManager.OnClusterClickListener<PointMarker>, ClusterManager.OnClusterInfoWindowClickListener<PointMarker>, ClusterManager.OnClusterItemClickListener<PointMarker>, ClusterManager.OnClusterItemInfoWindowClickListener<PointMarker> {
 	private GoogleMap mMap;

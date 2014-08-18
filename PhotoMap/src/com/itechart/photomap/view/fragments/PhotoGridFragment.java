@@ -1,4 +1,4 @@
-package com.itechart.photomap.fragments;
+package com.itechart.photomap.view.fragments;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -17,9 +17,9 @@ import android.widget.GridView;
 import com.itechart.photomap.Constants;
 import com.itechart.photomap.PhotoMap;
 import com.itechart.photomap.R;
-import com.itechart.photomap.activities.FullScreenView;
-import com.itechart.photomap.adapters.PhotoGridAdapter;
 import com.itechart.photomap.database.model.Photo;
+import com.itechart.photomap.view.activities.FullScreenView;
+import com.itechart.photomap.view.adapters.PhotoGridAdapter;
 
 public class PhotoGridFragment extends Fragment {
 	private GridView gvPhoto;

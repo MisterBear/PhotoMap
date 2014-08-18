@@ -1,4 +1,4 @@
-package com.itechart.photomap.activities;
+package com.itechart.photomap.view.activities;
 
 import java.io.File;
 import java.io.IOException;
@@ -35,13 +35,13 @@ import com.itechart.photomap.Constants;
 import com.itechart.photomap.PhotoMap;
 import com.itechart.photomap.R;
 import com.itechart.photomap.database.model.Photo;
-import com.itechart.photomap.fragments.MapFragment;
-import com.itechart.photomap.fragments.PhotoGridFragment;
-import com.itechart.photomap.fragments.PhotoListFragment;
 import com.itechart.photomap.services.UploadService;
 import com.itechart.photomap.utils.Utils;
 import com.itechart.photomap.utils.interfaces.AlertDialogApplyListener;
 import com.itechart.photomap.utils.interfaces.AlertDialogWithEditTextListener;
+import com.itechart.photomap.view.fragments.MapFragment;
+import com.itechart.photomap.view.fragments.PhotoGridFragment;
+import com.itechart.photomap.view.fragments.PhotoListFragment;
 
 public class MainActivity extends ActionBarActivity implements ActionBar.OnNavigationListener, AlertDialogWithEditTextListener, GooglePlayServicesClient.ConnectionCallbacks, GooglePlayServicesClient.OnConnectionFailedListener, AlertDialogApplyListener {
 	public static final int MAP_PAGE = 0;

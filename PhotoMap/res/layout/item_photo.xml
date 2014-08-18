@@ -9,6 +9,7 @@
         android:id="@+id/ip_iv_photo"
         android:layout_width="wrap_content"
         android:layout_height="120dp"
-        android:scaleType="centerInside" />
+        android:padding="1dp"
+        android:scaleType="centerCrop" />
 
 </LinearLayout>
